@@ -1,31 +1,43 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
+// import type { CollectionEntry } from "astro:content";
+// import { getCollection } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import H1 from "../../components/H1.astro";
 import Main from "../../components/Main.astro";
 import { Image } from "astro:assets";
+// import { getEntryBySlug } from "astro:content";
+import { getEntry } from "astro:content";
+// export const prerender = true;
 
-export const getStaticPaths = async () => {
-  const posts = await getCollection("posts");
-  const paths = posts.map((post) => {
-    return {
-      params: {
-        slug: post.slug,
-      },
-      props: {
-        post,
-      },
-    };
-  });
-  return paths;
-};
+// export const getStaticPaths = async () => {
+//   const posts = await getCollection("posts");
+//   const paths = posts.map((post) => {
+//     return {
+//       params: {
+//         slug: post.slug,
+//       },
+//       props: {
+//         post,
+//       },
+//     };
+//   });
+//   return paths;
+// };
 
-type Props = {
-  post: CollectionEntry<"posts">;
-};
+// type Props = {
+//   post: CollectionEntry<"posts">;
+// };
 
-const { post } = Astro.props;
+// const { post } = Astro.props;
+
+// using another way than prerender=true for SSR..
+const {slug} = Astro.params;  // Astro passes slug param when blog/[slug].astro is called.
+// const post = await getEntryBySlug("posts", slug as string);  // deprecated
+const post = await getEntry({collection: "posts", slug: slug as string})
+if (!post) {
+  return Astro.redirect('/404');
+}
+
 const { Content } = await post.render();
 ---
 
